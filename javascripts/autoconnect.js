@@ -1,15 +1,36 @@
 $(function(){
-	var baseScript = 'javascript:$("#logonForm_standard_auth_form input").each(function(e,a){a.value = (e==0)?"&login":"&password";});$("#logonForm_connect_button").click();';
+	var baseScript = 'javascript:document.getElementById("&login-selector").value="&login";';
+	baseScript += 'document.getElementById("&password-selector").value="&password";';
+	baseScript += 'document.getElementById("&submit-selector").click();';
+	var selectors = {
+		portal : {
+			login:"",
+			password:"",
+			submit : ""
+		},
+		extranet : {
+			login:"textfield-1035-inputEl",
+			password:"textfield-1036-inputEl",
+			submit : ""
+		}
+	}
 
 	function updateLink(){
 		var login = $("input#login-input").val();
 		var password = $("input#password-input").val();
 
-		var script = baseScript.replace("&login",login).replace("&password",password);
+		console.log($("#site-select").val());
+		var selector = selectors[$("#site-select").val()];
+		console.log(selector);
+
+		var script = baseScript .replace("&password-selector",selector.password)
+								.replace("&password",password)
+								.replace("&login-selector",selector.login)
+								.replace("&login",login)
+								.replace("&submit-selector",selector.submit);
 		console.log(script);
 		$("#bookmarklet-link").attr("href",script);
 	}
-	$("input").on('keyup',function(e){
-		updateLink();
-	});
+	$("input").on('keyup',function(e){ updateLink(); });
+	$("#site-select").change(function(e){ updateLink(); });
 });
